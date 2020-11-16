@@ -178,7 +178,5 @@ Sample average rate for multi_detection: 75.96
 Sample average rate for inference: 46.599-118.048
 
 ## Contact Us
-Feel free to get in touch via email and share questions, comments and suggestions!
-
-asawareeb@nvidia.com
+Please let us know if you run into any issues [here](https://github.com/NVIDIA-AI-IOT/ros2_deepstream/issues).
 
