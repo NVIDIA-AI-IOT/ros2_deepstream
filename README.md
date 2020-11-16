@@ -11,7 +11,7 @@ This project includes ROS2 publisher nodes which take a single/multiple video st
 - **Object Detection:** Detects 4 classes of objects: Vehicle, Person, Road Sign, Two wheeler.
 - Output of this inference is published on topic '**infer_detection**'.
 
-- **Attribute Classification:** For instance, for object of class 'Vehicle', 3 categories of atrributes are identified: color, make and type.
+- **Attribute Classification:** For objects of class 'Vehicle', 3 categories of atrributes are identified: color, make and type.
 - Output of this inference is published on topic '**infer_classification**'.
 
 2. **multi_stream** node: This takes multiple video files as input, performs the same inference tasks and publishes to topics **multi_detection** and **multi_classification**. 
@@ -150,7 +150,7 @@ To run the sample subscribers, open separate terminals, navigate to your ros wor
 
 **sub_multi_classification** subscribes to topic multi_classification.
 
-`ros2 run subscriber_pkg sub_classification`
+`ros2 run subscriber_pkg sub_multi_classification`
 
 An example output:
 
