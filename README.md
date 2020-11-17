@@ -2,6 +2,8 @@
 
 ROS2 nodes for DeepStream applications.
 
+[NVIDIA Developer Blog](https://developer.nvidia.com/blog/implementing-robotics-applications-with-ros-2-and-ai-on-jetson-platform-2/)
+
 This work is based on sample applications from the [DeepStream Python Apps](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps) project. The packages have been tested on NVIDIA Jetson AGX Xavier with Ubuntu 18.04, ROS Eloquent, DeepStream SDK 5.0 (or later) and TensorRT. The project accesses some files in the DeepStream 5.0 root location (/opt/nvidia/deepstream/deepstream/samples/).
 
 This project includes ROS2 publisher nodes which take a single/multiple video streams as input from webcam or from file:
