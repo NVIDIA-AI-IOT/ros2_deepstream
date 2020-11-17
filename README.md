@@ -59,7 +59,7 @@ The directory structure should look like this:
 .
 +- dev_ws
    +- src
-      +- deepstream_ros2
+      +- ros2_deepstream
          +- common
          +- config_files
             +- dstest1_pgie_config.txt (several other config files)
