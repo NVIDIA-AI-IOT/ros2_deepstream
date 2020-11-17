@@ -51,7 +51,7 @@ If missing, install using following commands:
 
 1. Clone this repo into the **src** folder inside your ROS2 workspace ([creating a ROS2 workspace](https://index.ros.org/doc/ros2/Tutorials/Workspace/Creating-A-Workspace/)) using the following command:
 
-`git clone https://gitlab-master.nvidia.com/asawareeb/deepstream_ros2.git`
+`git clone https://github.com/NVIDIA-AI-IOT/ros2_deepstream.git`
 
 The directory structure should look like this:
 
