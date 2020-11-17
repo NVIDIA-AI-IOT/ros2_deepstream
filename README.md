@@ -183,7 +183,7 @@ Sample average rate for inference: 46.599-118.048
 Please let us know if you run into any issues [here](https://github.com/NVIDIA-AI-IOT/ros2_deepstream/issues).
 
 ## Related ROS 2 Projects
-- [ros2_torch_trt](https://github.com/NVIDIA-AI-IOT/ros2_torch_trt) ROS 2 Real Time Classification and Detection
-- [ros2_jetson_stats](https://github.com/NVIDIA-AI-IOT/ros2_jetson_stats) ROS 2 package for monitoring and controlling NVIDIA Jetson Platform resources
-- [ros2_trt_pose](https://github.com/NVIDIA-AI-IOT/ros2_trt_pose) ROS 2 package for "trt_pose": real-time human pose estimation on NVIDIA Jetson Platform
+- [ros2_torch_trt](https://github.com/NVIDIA-AI-IOT/ros2_torch_trt) : ROS 2 Real Time Classification and Detection
+- [ros2_jetson_stats](https://github.com/NVIDIA-AI-IOT/ros2_jetson_stats) : ROS 2 package for monitoring and controlling NVIDIA Jetson Platform resources
+- [ros2_trt_pose](https://github.com/NVIDIA-AI-IOT/ros2_trt_pose) : ROS 2 package for "trt_pose": real-time human pose estimation on NVIDIA Jetson Platform
 
