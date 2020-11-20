@@ -40,7 +40,7 @@ from gi.repository import GObject, Gst
 
 import pyds
 
-sys.path.insert(0, './src/deepstream_ros2')
+sys.path.insert(0, './src/ros2_deepstream')
 from common.is_aarch_64 import is_aarch64
 from common.bus_call import bus_call
 from common.FPS import GETFPS
@@ -50,7 +50,7 @@ PGIE_CLASS_ID_BICYCLE = 1
 PGIE_CLASS_ID_PERSON = 2
 PGIE_CLASS_ID_ROADSIGN = 3
 
-location = os.getcwd() + "/src/deepstream_ros2/config_files/"
+location = os.getcwd() + "/src/ros2_deepstream/config_files/"
 class_obj = (open(location+'object_labels.txt').readline().rstrip('\n')).split(';')
 
 class_color = (open(location+'color_labels.txt').readline().rstrip('\n')).split(';')
@@ -327,7 +327,7 @@ class InferencePublisher(Node):
         streammux.set_property('batched-push-timeout', 4000000)
 
         #Set properties of pgie and sgie
-        location = os.getcwd() + "/src/deepstream_ros2/config_files/"
+        location = os.getcwd() + "/src/ros2_deepstream/config_files/"
         pgie.set_property('config-file-path', location+"dstest2_pgie_config.txt")
         sgie1.set_property('config-file-path', location+"dstest2_sgie1_config.txt")
         sgie2.set_property('config-file-path', location+"dstest2_sgie2_config.txt")
