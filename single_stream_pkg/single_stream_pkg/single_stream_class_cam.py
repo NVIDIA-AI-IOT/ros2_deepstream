@@ -103,10 +103,8 @@ class InferencePublisher(Node):
                     obj_meta=pyds.NvDsObjectMeta.cast(l_obj.data)
                     l_classifier = obj_meta.classifier_meta_list
 
-#                    # If object is a car (class ID 0), perform attribute classification
-#                    if obj_meta.class_id == 0 and l_classifier is not None:
-                    # perform attribute classification on ALL classes
-                    if l_classifier is not None:
+                    # If object is a car (class ID 0), perform attribute classification
+                    if obj_meta.class_id == 0 and l_classifier is not None:
                         # Creating and publishing message with output of classification inference
                         msg2 = Classification2D()
 
@@ -210,9 +208,9 @@ class InferencePublisher(Node):
 
     def __init__(self):
         super().__init__('inference_publisher')
-#        # Taking name of input source from user
-#        self.declare_parameter('input_source')
-#        param_ip_src = self.get_parameter('input_source').value
+        # Taking name of input source from user
+        self.declare_parameter('input_source')
+        param_ip_src = self.get_parameter('input_source').value
         
         self.publisher_detection = self.create_publisher(Detection2DArray, 'infer_detection', 10)
         self.publisher_classification = self.create_publisher(Classification2D, 'infer_classification', 10)
@@ -230,10 +228,7 @@ class InferencePublisher(Node):
 
 
         print("Creating Source \n ")        
-#        source = Gst.ElementFactory.make("v4l2src", "usb-cam-source")
-#        if not source:
-#            sys.stderr.write(" Unable to create Source \n")
-        source = Gst.ElementFactory.make("rosimagesrc", "ros-image-source")
+        source = Gst.ElementFactory.make("v4l2src", "usb-cam-source")
         if not source:
             sys.stderr.write(" Unable to create Source \n")
 
@@ -278,7 +273,7 @@ class InferencePublisher(Node):
             sys.stderr.write(" Unable to make sgie1 \n")
 
 #        sgie2 = Gst.ElementFactory.make("nvinfer", "secondary2-nvinference-engine")
-#        if not sgie2:
+#        if not sgie1:
 #            sys.stderr.write(" Unable to make sgie2 \n")
 #
 #        sgie3 = Gst.ElementFactory.make("nvinfer", "secondary3-nvinference-engine")
@@ -321,9 +316,7 @@ class InferencePublisher(Node):
             sys.stderr.write(" Unable to create egl sink2 \n")
 
         
-#        source.set_property('device', param_ip_src)
-#        caps_v4l2src.set_property('caps', Gst.Caps.from_string("video/x-raw, framerate=30/1"))
-        source.set_property('ros-topic', "/camera/color/image_raw")
+        source.set_property('device', param_ip_src)
         caps_v4l2src.set_property('caps', Gst.Caps.from_string("video/x-raw, framerate=30/1"))
         caps_vidconvsrc.set_property('caps', Gst.Caps.from_string("video/x-raw(memory:NVMM)"))
 #        streammux.set_property('width', 1920)

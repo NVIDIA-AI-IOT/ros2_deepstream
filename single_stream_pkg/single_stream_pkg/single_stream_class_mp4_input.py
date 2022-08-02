@@ -103,10 +103,8 @@ class InferencePublisher(Node):
                     obj_meta=pyds.NvDsObjectMeta.cast(l_obj.data)
                     l_classifier = obj_meta.classifier_meta_list
 
-#                    # If object is a car (class ID 0), perform attribute classification
-#                    if obj_meta.class_id == 0 and l_classifier is not None:
-                    # perform attribute classification on ALL classes
-                    if l_classifier is not None:
+                    # If object is a car (class ID 0), perform attribute classification
+                    if obj_meta.class_id == 0 and l_classifier is not None:
                         # Creating and publishing message with output of classification inference
                         msg2 = Classification2D()
 
@@ -210,9 +208,9 @@ class InferencePublisher(Node):
 
     def __init__(self):
         super().__init__('inference_publisher')
-#        # Taking name of input source from user
-#        self.declare_parameter('input_source')
-#        param_ip_src = self.get_parameter('input_source').value
+        # Taking name of input source from user
+        self.declare_parameter('input_source')
+        param_ip_src = self.get_parameter('input_source').value
         
         self.publisher_detection = self.create_publisher(Detection2DArray, 'infer_detection', 10)
         self.publisher_classification = self.create_publisher(Classification2D, 'infer_classification', 10)
@@ -229,39 +227,64 @@ class InferencePublisher(Node):
             sys.stderr.write(" Unable to create Pipeline \n")
 
 
-        print("Creating Source \n ")        
+#        print("Creating Source \n ")        
 #        source = Gst.ElementFactory.make("v4l2src", "usb-cam-source")
 #        if not source:
 #            sys.stderr.write(" Unable to create Source \n")
-        source = Gst.ElementFactory.make("rosimagesrc", "ros-image-source")
-        if not source:
-            sys.stderr.write(" Unable to create Source \n")
+#
+#        caps_v4l2src = Gst.ElementFactory.make("capsfilter", "v4l2src_caps")
+#        if not caps_v4l2src:
+#            sys.stderr.write(" Unable to create v4l2src capsfilter \n")
+#
+#
+#        print("Creating Video Converter \n")
+#
+#        # videoconvert to make sure a superset of raw formats are supported
+#        vidconvsrc = Gst.ElementFactory.make("videoconvert", "convertor_src1")
+#        if not vidconvsrc:
+#            sys.stderr.write(" Unable to create videoconvert \n")
+#
+#        # nvvideoconvert to convert incoming raw buffers to NVMM Mem (NvBufSurface API)
+#        nvvidconvsrc = Gst.ElementFactory.make("nvvideoconvert", "convertor_src2")
+#        if not nvvidconvsrc:
+#            sys.stderr.write(" Unable to create Nvvideoconvert \n")
+#
+#        caps_vidconvsrc = Gst.ElementFactory.make("capsfilter", "nvmm_caps")
+#        if not caps_vidconvsrc:
+#            sys.stderr.write(" Unable to create capsfilter \n")
+#
+#        # Create nvstreammux instance to form batches from one or more sources.
+#        streammux = Gst.ElementFactory.make("nvstreammux", "Stream-muxer")
+#        if not streammux:
+#            sys.stderr.write(" Unable to create NvStreamMux \n")
 
-        caps_v4l2src = Gst.ElementFactory.make("capsfilter", "v4l2src_caps")
-        if not caps_v4l2src:
-            sys.stderr.write(" Unable to create v4l2src capsfilter \n")
+        # phth ===========================================================================
 
-
-        print("Creating Video Converter \n")
-
-        # videoconvert to make sure a superset of raw formats are supported
-        vidconvsrc = Gst.ElementFactory.make("videoconvert", "convertor_src1")
-        if not vidconvsrc:
-            sys.stderr.write(" Unable to create videoconvert \n")
-
-        # nvvideoconvert to convert incoming raw buffers to NVMM Mem (NvBufSurface API)
-        nvvidconvsrc = Gst.ElementFactory.make("nvvideoconvert", "convertor_src2")
-        if not nvvidconvsrc:
-            sys.stderr.write(" Unable to create Nvvideoconvert \n")
-
-        caps_vidconvsrc = Gst.ElementFactory.make("capsfilter", "nvmm_caps")
-        if not caps_vidconvsrc:
-            sys.stderr.write(" Unable to create capsfilter \n")
-
+        print("Creating streamux \n ")
+    
         # Create nvstreammux instance to form batches from one or more sources.
         streammux = Gst.ElementFactory.make("nvstreammux", "Stream-muxer")
         if not streammux:
             sys.stderr.write(" Unable to create NvStreamMux \n")
+    
+        i = 0
+        print("Creating source_bin ", i," \n ")
+        uri_name=param_ip_src 
+        if uri_name.find("rtsp://") == 0 :
+            is_live = True
+        source_bin=self.create_source_bin(i, uri_name)
+        if not source_bin:
+            sys.stderr.write("Unable to create source bin \n")
+        padname="sink_%u" %i
+        sinkpad= streammux.get_request_pad(padname)
+        if not sinkpad:
+            sys.stderr.write("Unable to create sink pad bin \n")
+        srcpad=source_bin.get_static_pad("src")
+        if not srcpad:
+            sys.stderr.write("Unable to create src pad bin \n")
+        srcpad.link(sinkpad)
+
+        # phth end =======================================================================
 
         # Use nvinfer to run inferencing on decoder's output,
         # behaviour of inferencing is set through config file
@@ -278,7 +301,7 @@ class InferencePublisher(Node):
             sys.stderr.write(" Unable to make sgie1 \n")
 
 #        sgie2 = Gst.ElementFactory.make("nvinfer", "secondary2-nvinference-engine")
-#        if not sgie2:
+#        if not sgie1:
 #            sys.stderr.write(" Unable to make sgie2 \n")
 #
 #        sgie3 = Gst.ElementFactory.make("nvinfer", "secondary3-nvinference-engine")
@@ -323,11 +346,9 @@ class InferencePublisher(Node):
         
 #        source.set_property('device', param_ip_src)
 #        caps_v4l2src.set_property('caps', Gst.Caps.from_string("video/x-raw, framerate=30/1"))
-        source.set_property('ros-topic', "/camera/color/image_raw")
-        caps_v4l2src.set_property('caps', Gst.Caps.from_string("video/x-raw, framerate=30/1"))
-        caps_vidconvsrc.set_property('caps', Gst.Caps.from_string("video/x-raw(memory:NVMM)"))
-#        streammux.set_property('width', 1920)
-#        streammux.set_property('height', 1080)
+#        caps_vidconvsrc.set_property('caps', Gst.Caps.from_string("video/x-raw(memory:NVMM)"))
+##        streammux.set_property('width', 1920)
+##        streammux.set_property('height', 1080)
         streammux.set_property('width', 640)
         streammux.set_property('height', 480)
         streammux.set_property('batch-size', 1)
@@ -369,16 +390,17 @@ class InferencePublisher(Node):
                 tracker.set_property('enable_batch_process', tracker_enable_batch_process)
 
         tee = Gst.ElementFactory.make('tee', 'tee')
-        queue1 = Gst.ElementFactory.make('queue','infer1')
-        queue2 = Gst.ElementFactory.make('queue','infer2')
+        queue6 = Gst.ElementFactory.make('queue','infer1')
+        queue7 = Gst.ElementFactory.make('queue','infer2')
 
         print("Adding elements to Pipeline \n")
-        self.pipeline.add(source)
-        self.pipeline.add(caps_v4l2src)
-        self.pipeline.add(vidconvsrc)
-        self.pipeline.add(nvvidconvsrc)
-        self.pipeline.add(caps_vidconvsrc)
+#        self.pipeline.add(source)
+#        self.pipeline.add(caps_v4l2src)
+#        self.pipeline.add(vidconvsrc)
+#        self.pipeline.add(nvvidconvsrc)
+#        self.pipeline.add(caps_vidconvsrc)
         self.pipeline.add(streammux)
+        self.pipeline.add(source_bin)
         self.pipeline.add(pgie)
         self.pipeline.add(pgie2)
         self.pipeline.add(tracker)
@@ -392,8 +414,8 @@ class InferencePublisher(Node):
         self.pipeline.add(sink1)
         self.pipeline.add(sink2)
         self.pipeline.add(tee)
-        self.pipeline.add(queue1)
-        self.pipeline.add(queue2)
+        self.pipeline.add(queue6)
+        self.pipeline.add(queue7)
 
         if is_aarch64():
             self.pipeline.add(transform1)
@@ -401,24 +423,25 @@ class InferencePublisher(Node):
 
         # Link the elements together
         print("Linking elements in the Pipeline \n")
-        source.link(caps_v4l2src)
-        caps_v4l2src.link(vidconvsrc)
-        vidconvsrc.link(nvvidconvsrc)
-        nvvidconvsrc.link(caps_vidconvsrc)
-
-        sinkpad = streammux.get_request_pad("sink_0")
-        if not sinkpad:
-            sys.stderr.write(" Unable to get the sink pad of streammux \n")
-        
-        srcpad = caps_vidconvsrc.get_static_pad("src")
-        if not srcpad:
-            sys.stderr.write(" Unable to get source pad of decoder \n")
-        srcpad.link(sinkpad)
+#        source.link(caps_v4l2src)
+#        caps_v4l2src.link(vidconvsrc)
+#        vidconvsrc.link(nvvidconvsrc)
+#        nvvidconvsrc.link(caps_vidconvsrc)
+#
+#        sinkpad = streammux.get_request_pad("sink_0")
+#        if not sinkpad:
+#            sys.stderr.write(" Unable to get the sink pad of streammux \n")
+#        
+#        srcpad = caps_vidconvsrc.get_static_pad("src")
+#        if not srcpad:
+#            sys.stderr.write(" Unable to get source pad of decoder \n")
+#        srcpad.link(sinkpad)
         streammux.link(tee)
-        tee.link(queue1)
-        tee.link(queue2)
-        queue1.link(pgie)
-        queue2.link(pgie2)
+        tee.link(queue6)
+        tee.link(queue7)
+        queue6.link(pgie)
+        queue7.link(pgie2)
+
         pgie.link(tracker)
         tracker.link(sgie1)
         #sgie1.link(sgie2)
@@ -459,6 +482,84 @@ class InferencePublisher(Node):
             sys.stderr.write(" Unable to get sink pad of nvosd \n")
         osdsinkpad2.add_probe(Gst.PadProbeType.BUFFER, self.osd_sink_pad_buffer_probe, 0)
 
+    def create_source_bin(self, index,uri):
+
+        print("Creating source bin")
+    
+        # Create a source GstBin to abstract this bin's content from the rest of the
+        # pipeline
+        bin_name="source-bin-%02d" %index
+        print(bin_name)
+        nbin=Gst.Bin.new(bin_name)
+        if not nbin:
+            sys.stderr.write(" Unable to create source bin \n")
+    
+        # Source element for reading from the uri.
+        # We will use decodebin and let it figure out the container format of the
+        # stream and the codec and plug the appropriate demux and decode plugins.
+        file_loop=False
+        if file_loop:
+            # use nvurisrcbin to enable file-loop
+            uri_decode_bin=Gst.ElementFactory.make("nvurisrcbin", "uri-decode-bin")
+            uri_decode_bin.set_property("file-loop", 1)
+        else:
+            uri_decode_bin=Gst.ElementFactory.make("uridecodebin", "uri-decode-bin")
+        if not uri_decode_bin:
+            sys.stderr.write(" Unable to create uri decode bin \n")
+        # We set the input uri to the source element
+        uri_decode_bin.set_property("uri",uri)
+        # Connect to the "pad-added" signal of the decodebin which generates a
+        # callback once a new pad for raw data has beed created by the decodebin
+        uri_decode_bin.connect("pad-added",self.cb_newpad,nbin)
+        uri_decode_bin.connect("child-added",self.decodebin_child_added,nbin)
+    
+        # We need to create a ghost pad for the source bin which will act as a proxy
+        # for the video decoder src pad. The ghost pad will not have a target right
+        # now. Once the decode bin creates the video decoder and generates the
+        # cb_newpad callback, we will set the ghost pad target to the video decoder
+        # src pad.
+        Gst.Bin.add(nbin,uri_decode_bin)
+        bin_pad=nbin.add_pad(Gst.GhostPad.new_no_target("src",Gst.PadDirection.SRC))
+        if not bin_pad:
+            sys.stderr.write(" Failed to add ghost pad in source bin \n")
+            return None
+        return nbin
+
+    def decodebin_child_added(self, child_proxy,Object,name,user_data):
+        print("Decodebin child added:", name, "\n")
+        if(name.find("decodebin") != -1):
+            Object.connect("child-added",self.decodebin_child_added,user_data)
+
+        if "source" in name:
+            source_element = child_proxy.get_by_name("source")
+            if source_element.find_property('drop-on-latency') != None:
+                Object.set_property("drop-on-latency", True)
+
+    def cb_newpad(self, decodebin, decoder_src_pad,data):
+        print("In cb_newpad\n")
+        caps=decoder_src_pad.get_current_caps()
+        if not caps:
+            caps = decoder_src_pad.query_caps()
+        gststruct=caps.get_structure(0)
+        gstname=gststruct.get_name()
+        source_bin=data
+        features=caps.get_features(0)
+
+        # Need to check if the pad created by the decodebin is for video and not
+        # audio.
+        print("gstname=",gstname)
+        if(gstname.find("video")!=-1):
+            # Link the decodebin pad only if decodebin has picked nvidia
+            # decoder plugin nvdec_*. We do this by checking if the pad caps contain
+            # NVMM memory features.
+            print("features=",features)
+            if features.contains("memory:NVMM"):
+                # Get the source bin ghost pad
+                bin_ghost_pad=source_bin.get_static_pad("src")
+                if not bin_ghost_pad.set_target(decoder_src_pad):
+                    sys.stderr.write("Failed to link decoder src pad to source bin ghost pad\n")
+            else:
+                sys.stderr.write(" Error: Decodebin did not pick nvidia decoder plugin.\n")
 
     def start_pipeline(self):
         print("Starting pipeline \n")

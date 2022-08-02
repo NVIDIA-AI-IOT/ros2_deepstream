@@ -1,0 +1,1 @@
+prohibitory;danger;mandatory;other
