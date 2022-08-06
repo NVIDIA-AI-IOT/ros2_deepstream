@@ -153,7 +153,7 @@ class InferencePublisher(Node):
                 height = obj_meta.rect_params.height
                 bounding_box = BoundingBox2D()
                 bounding_box.center.x = float(left + (width/2)) 
-                bounding_box.center.y = float(top - (height/2))
+                bounding_box.center.y = float(top + (height/2))
                 bounding_box.size_x = width
                 bounding_box.size_y = height
                 
