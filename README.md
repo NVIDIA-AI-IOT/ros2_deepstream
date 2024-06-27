@@ -1,3 +1,7 @@
+# ------------------------------------------------------
+# This sample application is no longer maintained
+# ------------------------------------------------------
+
 # DeepStream_ROS2
 
 ROS2 nodes for DeepStream applications.
